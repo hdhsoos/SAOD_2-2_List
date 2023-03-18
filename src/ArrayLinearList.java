@@ -1,150 +1,176 @@
 import java.util.Scanner;
 
-public class ArrayLinearList {
-    private int[] list;
+class ArrayLinearList {
+    private Object[] elements;
     private int size;
 
-    public ArrayLinearList(int maxSize) {
-        list = new int[maxSize];
+    public ArrayLinearList(int MaxSize) {
+        elements = new Object[MaxSize];
         size = 0;
     }
 
-    public void displayList() {
+    public void printList() {
         if (size == 0) {
-            System.out.println("List is empty");
+            System.out.println("Список пуст.");
         } else {
             for (int i = 0; i < size; i++) {
-                System.out.print(list[i] + " ");
+                System.out.print(elements[i]);
+                System.out.print(' ');
             }
             System.out.println();
         }
     }
 
-    public int find(int key) {
-        int i;
-        for (i = 0; i < size; i++) {
-            if (list[i] == key) {
-                break;
+    public int search(Object element) {
+        for (int i = 0; i < size; i++) {
+            if (elements[i].equals(element)) {
+                return i;
             }
         }
-        if (i == size) {
-            return -1;
-        } else {
-            return i;
-        }
+        return -1;
     }
 
-    public void insert(int value) {
-        int i;
-        for (i = 0; i < size; i++) {
-            if (list[i] > value) {
-                break;
-            }
-        }
-        for (int j = size; j > i; j--) {
-            list[j] = list[j - 1];
-        }
-        list[i] = value;
-        size++;
-    }
-
-    public void insertAfter(int key, int value) {
-        int i = find(key);
-        if (i == -1) {
-            System.out.println("Key not found");
+    public void add(Object element) {
+        if (size == elements.length) {
+            System.out.println("Список заполнен.");
         } else {
-            for (int j = size; j > i + 1; j--) {
-                list[j] = list[j - 1];
+            int index = size;
+            for (int i = 0; i < size; i++) {
+                if (((Comparable) element).compareTo(elements[i]) < 0) {
+                    index = i;
+                    break;
+                }
             }
-            list[i + 1] = value;
+            for (int i = size; i > index; i--) {
+                elements[i] = elements[i - 1];
+            }
+            elements[index] = element;
             size++;
         }
     }
 
-    public void insertBefore(int key, int value) {
-        int i = find(key);
-        if (i == -1) {
-            System.out.println("Key not found");
+    public boolean addAfter(Object after, Object element) {
+        int index = search(after);
+        if (index == -1) {
+            return false;
         } else {
-            for (int j = size; j > i; j--) {
-                list[j] = list[j - 1];
+            if (size == elements.length) {
+                System.out.println("Список заполнен.");
+            } else {
+                int newIndex = index + 1;
+                for (int i = size; i > newIndex; i--) {
+                    elements[i] = elements[i - 1];
+                }
+                elements[newIndex] = element;
+                size++;
             }
-            list[i] = value;
-            size++;
+            return true;
         }
     }
 
-    public void delete(int key) {
-        int i = find(key);
-        if (i == -1) {
-            System.out.println("Key not found");
+    public boolean addBefore(Object before, Object element) {
+        int index = search(before);
+        if (index == -1) {
+            return false;
         } else {
-            for (int j = i; j < size - 1; j++) {
-                list[j] = list[j + 1];
+            if (size == elements.length) {
+                System.out.println("Список заполнен.");
+            } else {
+                int newIndex = index;
+                for (int i = size; i > newIndex; i--) {
+                    elements[i] = elements[i - 1];
+                }
+                elements[newIndex] = element;
+                size++;
+            }
+            return true;
+        }
+    }
+
+    public boolean delete(Object element) {
+        int index = search(element);
+        if (index == -1) {
+            return false;
+        } else {
+            for (int i = index; i < size - 1; i++) {
+                elements[i] = elements[i + 1];
             }
             size--;
+            return true;
         }
     }
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter maximum size of list: ");
+        System.out.print("Введите максимальную длину списка: ");
         int maxSize = scanner.nextInt();
         ArrayLinearList list = new ArrayLinearList(maxSize);
-        while (true) {
-            System.out.println("1. Display list");
-            System.out.println("2. Find element");
-            System.out.println("3. Insert element");
-            System.out.println("4. Insert element after");
-            System.out.println("5. Insert element before");
-            System.out.println("6. Delete element");
-            System.out.println("7. Exit");
-            System.out.print("Enter your choice: ");
-            int choice = scanner.nextInt();
+        int choice;
+        do {
+            System.out.println("Выберите действие:");
+            System.out.println("1. Вывести список на экран.");
+            System.out.println("2. Найти элемент в списке.");
+            System.out.println("3. Добавить новый элемент в список.");
+            System.out.println("4. Добавить новый элемент после заданного.");
+            System.out.println("5. Добавить новый элемент перед заданным.");
+            System.out.println("6. Удалить заданный элемент.");
+            System.out.println("0. Выйти.");
+            choice = scanner.nextInt();
             switch (choice) {
                 case 1:
-                    list.displayList();
+                    list.printList();
                     break;
                 case 2:
-                    System.out.print("Enter element to find: ");
-                    int key = scanner.nextInt();
-                    int index = list.find(key);
+                    System.out.println("Введите элемент для поиска: ");
+                    String elementToFind = scanner.next();
+                    int index = list.search(elementToFind);
                     if (index == -1) {
-                        System.out.println("Element not found");
+                        System.out.println("Элемент не найден.");
                     } else {
-                        System.out.println("Element found at index " + index);
+                        System.out.println("Элемент найден на позиции " + index);
                     }
                     break;
                 case 3:
-                    System.out.print("Enter element to insert: ");
-                    int value = scanner.nextInt();
-                    list.insert(value);
+                    System.out.println("Введите новый элемент: ");
+                    String newElement = scanner.next();
+                    list.add(newElement);
                     break;
                 case 4:
-                    System.out.print("Enter element to insert after: ");
-                    int after = scanner.nextInt();
-                    System.out.print("Enter element to insert: ");
-                    int insertAfter = scanner.nextInt();
-                    list.insertAfter(after, insertAfter);
+                    System.out.println("Введите элемент, после которого нужно добавить новый элемент: ");
+                    String afterElement = scanner.next();
+                    System.out.println("Введите новый элемент: ");
+                    String newElementAfter = scanner.next();
+                    boolean addedAfter = list.addAfter(afterElement, newElementAfter);
+                    if (!addedAfter) {
+                        System.out.println("Элемент " + afterElement + " не найден.");
+                    }
                     break;
                 case 5:
-                    System.out.print("Enter element to insert before: ");
-                    int before = scanner.nextInt();
-                    System.out.print("Enter element to insert: ");
-                    int insertBefore = scanner.nextInt();
-                    list.insertBefore(before, insertBefore);
+                    System.out.println("Введите элемент, перед которым нужно добавить новый элемент: ");
+                    String beforeElement = scanner.next();
+                    System.out.println("Введите новый элемент: ");
+                    String newElementBefore = scanner.next();
+                    boolean addedBefore = list.addBefore(beforeElement, newElementBefore);
+                    if (!addedBefore) {
+                        System.out.println("Элемент " + beforeElement + " не найден.");
+                    }
                     break;
                 case 6:
-                    System.out.print("Enter element to delete: ");
-                    int delete = scanner.nextInt();
-                    list.delete(delete);
+                    System.out.println("Введите элемент, который нужно удалить: ");
+                    String elementToDelete = scanner.next();
+                    boolean deleted = list.delete(elementToDelete);
+                    if (!deleted) {
+                        System.out.println("Элемент " + elementToDelete + " не найден.");
+                    }
                     break;
-                case 7:
-                    System.exit(0);
+                case 0:
+                    System.out.println("Выход.");
                     break;
                 default:
-                    System.out.println("Invalid choice");
+                    System.out.println("Ошибка ввода.");
+                    break;
             }
-        }
+            System.out.println();
+        } while (choice != 0);
     }
 }
